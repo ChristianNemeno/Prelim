@@ -1,79 +1,25 @@
-.MODEL SMALL
-.STACK 100H
+; Filename: EXER15.ASM
+; Programmer Name: YOUR FULLNAME HERE
+; Date: DATE TODAY
+; Description: This assembly language program will continuously get 
+; character input and display back input until Enter key is pressed.
+.MODEL small
+.STACK 200h
 .DATA
-    TOP_BOTTOM DB '+---+---+---+---+---+$'
-    VERTICAL DB '|$'
-    SPACE DB ' $'
-    NEWLINE DB 13, 10, '$'
-    NUMBER DB '0$'
-
 .CODE
-MAIN PROC
-    MOV AX, @DATA
-    MOV DS, AX
+ProgramStart:
+ EchoLoop:
+ mov ah,1 ; DOS keyboard input function
+ int 21h ; get the next key
 
-    ; Print top border
-    LEA DX, TOP_BOTTOM
-    MOV AH, 09H
-    INT 21H
-    CALL PRINT_NEWLINE
+ cmp al,13 ; was the key the Enter key?
 
-    MOV CX, 2  ; 2 rows of numbers
-ROW_LOOP:
-    PUSH CX
-    MOV CX, 5  ; 5 numbers per row
-    
-    ; Print left border
-    LEA DX, VERTICAL
-    MOV AH, 09H
-    INT 21H
-
-NUMBER_LOOP:
-    ; Print space
-    LEA DX, SPACE
-    MOV AH, 09H
-    INT 21H
-
-    ; Print number
-    LEA DX, NUMBER
-    MOV AH, 09H
-    INT 21H
-    INC NUMBER
-
-    ; Print space
-    LEA DX, SPACE
-    MOV AH, 09H
-    INT 21H
-
-    ; Print vertical separator
-    LEA DX, VERTICAL
-    MOV AH, 09H
-    INT 21H
-
-    LOOP NUMBER_LOOP
-
-    CALL PRINT_NEWLINE
-
-    ; Print middle border
-    LEA DX, TOP_BOTTOM
-    MOV AH, 09H
-    INT 21H
-    CALL PRINT_NEWLINE
-
-    POP CX
-    LOOP ROW_LOOP
-
-    ; Exit program
-    MOV AH, 4CH
-    INT 21H
-
-MAIN ENDP
-
-PRINT_NEWLINE PROC
-    LEA DX, NEWLINE
-    MOV AH, 09H
-    INT 21H
-    RET
-PRINT_NEWLINE ENDP
-
-END MAIN
+ jz EchoDone ; yes, so we're done echoing
+ mov dl,al ; put the character into DL
+ mov ah,2 ; DOS display output function
+ int 21h ; display the character
+ jmp EchoLoop ; echo the next character
+ EchoDone:
+ mov ah,4ch ; DOS terminate program function
+ int 21h ; terminate the program
+END ProgramStart
