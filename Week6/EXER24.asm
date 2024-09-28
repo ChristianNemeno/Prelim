@@ -1,430 +1,582 @@
 ; Filename: EXER24.ASM
-; Programmer Name: Christian A. Nemeno (Modified by Assistant)
-; Date: 20/09/2024
+; Programmer Name: Christian A Nemeno
+; Date: September 20, 2024
+; Description: Edit your Laboratory Prelim Hands-on Exam. Before the form displays,
+;              ask the user to input all the needed data. Then, display the
+;              form with all the data entered by the user.
 
-; Description: This program prompts for user input and then displays a vehicle sticker application form with the entered data.
+.MODEL small
+.STACK 100h
+.DATA
+menu    db '                                                                         ', 13, 10
+        db '                   Cebu Institute of Technology - University               ', 13, 10
+        db '                       VEHICLE STICKER APPLICATION FORM                   ', 13, 10
+        db '                        Please fill out the form below.                    ', 13, 10, 10
+        db '   Personnel Type:                      V   Vehicle Sticker Type:           V ', 13, 10, 10
+        db '   Name of Applicant/Driver:                ID Number:                      ', 13, 10, 10
+        db '   Mobile Number:                           Address:                        ', 13, 10, 10
+        db '   Vehicle Make(s)/Brand:                   Plate Number:                   ', 13, 10, 10
+        db '   Vehicle Color:                       V   Vehicle Type:                   V ', 13, 10, 10, 10
+        db '                                    SUBMIT                      ', 13, 10, 10
+        db '                        Copyright 2024 Christian A Nemeno      ', 13, 10, 10, 10
+        db '                                  Thank You!            ', 13, 10, '$'
 
-.model small
-.stack 100h
-.data
-    ; Input prompts and form structure
-    inputPrompt db 'Cebu Institute of Technology - University', 13, 10
-                db 'VEHICLE STICKER APPLICATION FORM', 13, 10
-                db 'Please enter the needed information:', 13, 10, 10, '$'
-    promptPersonnelType db 'Personnel Type: $'
-    promptApplicantName db 'Name of Applicant/Driver: $'
-    promptMobileNumber db 'Mobile Number: $'
-    promptCarMake db 'Vehicle Make(s)/Brand: $'
-    promptCarColor db 'Vehicle Color: $'
-    promptStickerType db 'Vehicle Sticker Type: $'
-    promptIdNum db 'ID Number: $'
-    promptAddress db 'Address: $'
-    promptPlateNumber db 'Plate Number: $'
-    promptCarType db 'Vehicle Type: $'
+personnelType db 9, 0, 9 dup(0)     
+applicantName db 14, 0, 14 dup(0)   
+mobileNumber db 12, 0, 12 dup(0)
+carMake db 12, 0, 12 dup(0)
+carColor db 9, 0, 9 dup(0)
+stickerType db 9, 0, 9 dup(0)
+idNum db 12, 0, 12 dup(0)
+address db 12, 0, 12 dup(0)
+plateNumber db 12, 0, 12 dup(0)
+carType db 9, 0, 9 dup(0)
 
-    menu db '                                                                         ', 13, 10
-         db '                   Cebu Institute of Technology - University               ', 13, 10
-         db '                       VEHICLE STICKER APPLICATION FORM                   ', 13, 10
-         db '                        Please fill out the form below.                    ', 13, 10, 10
-         db '   Personnel Type:                                                         ', 13, 10
-         db '   Name of Applicant/Driver:                ID Number:                      ', 13, 10
-         db '   Mobile Number:                           Address:                        ', 13, 10
-         db '   Vehicle Make(s)/Brand:                   Plate Number:                   ', 13, 10
-         db '   Vehicle Color:                           Vehicle Type:                   ', 13, 10
-         db '   Vehicle Sticker Type:                                                    ', 13, 10, 10
-         db '                                    SUBMIT                      ', 13, 10, 10
-         db '                       Copyright 2024 Christian A Nemeno      ', 13, 10, 10, 10
-         db '                                  Thank You!            ', 13, 10, '$'
+row0 db 'Cebu Institute of Technology - University', 0dh, 0ah, '$'
+row1 db 'VEHICLE STICKER APPLICATION FORM', 0dh, 0ah, '$'
+row2 db 'Please enter the needed information:', 0dh, 0ah, '$'
+row3 db 'Personnel Type: $'
+row4 db 'Name of Applicant/Driver: $'
+row5 db 'Mobile Number: $'
+row6 db 'Vehicle Make(s)/Brand: $'
+row7 db 'Vehicle Color: $'
+row8 db 'Vehicle Sticker Type: $'
+row9 db 'ID Number: $'
+rowA db 'Address: $'
+rowB db 'Plate Number: $'
+rowC db 'Vehicle Type: $'
 
-    ; Buffers for storing user input (31 bytes for each field)
-    personnelType db 31, 0, 31 dup(0)
-    applicantName db 31, 0, 31 dup(0)
-    mobileNumber db 31, 0, 31 dup(0)
-    carMake db 31, 0, 31 dup(0)
-    carColor db 31, 0, 31 dup(0)
-    stickerType db 31, 0, 31 dup(0)
-    idNum db 31, 0, 31 dup(0)
-    address db 31, 0, 31 dup(0)
-    plateNumber db 31, 0, 31 dup(0)
-    carType db 31, 0, 31 dup(0)
+nxt DB 0dh, 0ah, '$'
 
-    newline db 13, 10, '$'
+.CODE
 
-.code
+PrintString:
+    MOV ah, 09h
+    INT 21h
+    RET
 
-printString proc
-    mov ah, 09h
-    int 21h
-    ret
-printString endp
+NextL:
+    lea dx, nxt
+    MOV ah, 09h
+    INT 21h
+    RET
 
-getInput proc
-    mov ah, 0Ah
-    int 21h
-    ret
-getInput endp
 
-printNewline proc
-    lea dx, newline
-    call printString
-    ret
-printNewline endp
+inputForm proc
 
-getUserInput proc
-    ; Display input prompt
-    lea dx, inputPrompt
-    call printString
+    lea dx, row0
+    call PrintString
 
-    ; Get personnelType
-    lea dx, promptPersonnelType
-    call printString
+    lea dx, row1
+    call PrintString
+
+    lea dx, row2
+    call PrintString
+    call NextL
+
+    lea dx, row3
+    call PrintString
     lea dx, personnelType
-    call getInput
-    call printNewline
-
-    ; Get applicantName
-    lea dx, promptApplicantName
-    call printString
-    lea dx, applicantName
-    call getInput
-    call printNewline
-
-    ; Get mobileNumber
-    lea dx, promptMobileNumber
-    call printString
-    lea dx, mobileNumber
-    call getInput
-    call printNewline
-
-    ; Get carMake
-    lea dx, promptCarMake
-    call printString
-    lea dx, carMake
-    call getInput
-    call printNewline
-
-    ; Get carColor
-    lea dx, promptCarColor
-    call printString
-    lea dx, carColor
-    call getInput
-    call printNewline
-
-    ; Get stickerType
-    lea dx, promptStickerType
-    call printString
-    lea dx, stickerType
-    call getInput
-    call printNewline
-
-    ; Get idNum
-    lea dx, promptIdNum
-    call printString
-    lea dx, idNum
-    call getInput
-    call printNewline
-
-    ; Get address
-    lea dx, promptAddress
-    call printString
-    lea dx, address
-    call getInput
-    call printNewline
-
-    ; Get plateNumber
-    lea dx, promptPlateNumber
-    call printString
-    lea dx, plateNumber
-    call getInput
-    call printNewline
-
-    ; Get carType
-    lea dx, promptCarType
-    call printString
-    lea dx, carType
-    call getInput
-    call printNewline
-
-    ret
-getUserInput endp
-
-printForm proc
-    mov ax, 3   ;
-    int 10h     ;
-    mov ah, 06h ;
-    xor al, al  ;
-    xor cx, cx  ;
- 
- 
- 
-    ; Forms Grey background
-    mov ch, 1   ; Row start       x1
-    mov cl, 2   ; Column start    y1
-    mov dh, 20  ; Row end         x2
-    mov dl, 77  ; Column end      y2
-    mov bh, 70h ; Color
-    int 10h;
-    
-    ;ang red
-    mov ch, 1   ; Row start       x1
-    mov cl, 4   ; Column start    y1
-    mov dh, 3  ; Row end         x2
-    mov dl, 75  ; Column end      y2
-    mov bh, 40h ; Color
-    int 10h;
-
-    ; first line input
-    mov ch,5 ; r start
-    mov cl,30; col start
-    mov dh,5;   r end
-    mov dl,38;  col end
-    mov bh, 00h;
-    int 10h
-
-    ;FIRST LINE 2ND PART
-    mov ch,5 ; r start
-    mov cl,64; col start
-    mov dh,5;   r end
-    mov dl,74;  col end
-    mov bh, 00h;
-    int 10h
-
-    ; ang v sa first line
-
-    mov ch,5 ; r start
-    mov cl,39; col start
-    mov dh,5;   r end
-    mov dl,39;  col end
-    mov bh, 43h;
-    int 10h
-
-    mov ch,5 ; r start
-    mov cl,74; col start
-    mov dh,5;   r end
-    mov dl,74;  col end
-    mov bh, 43h;
-    int 10h
-
-    ;second line input
-
-    mov ch,7 ; r start
-    mov cl,30; col start
-    mov dh,7;   r end
-    mov dl,39;  col end
-    mov bh, 00h;
-    int 10h
-
-    
-    mov ch,7 ; r start
-    mov cl,64; col start
-    mov dh,7;   r end
-    mov dl,74;  col end
-    mov bh, 00h;
-    int 10h
-
-    ;third line input
-    
-    mov ch,9 ; r start
-    mov cl,30; col start
-    mov dh,9;   r end
-    mov dl,39;  col end
-    mov bh, 00h;
-    int 10h
-
-    mov ch,9 ; r start
-    mov cl,64; col start
-    mov dh,9;   r end
-    mov dl,74;  col end
-    mov bh, 00h;
-    int 10h
-
-    ;fourth line input
-    
-    mov ch,11 ; r start
-    mov cl,30; col start
-    mov dh,11;   r end
-    mov dl,39;  col end
-    mov bh, 00h;
-    int 10h
-
-    mov ch,11 ; r start
-    mov cl,64; col start
-    mov dh,11;   r end
-    mov dl,74;  col end
-    mov bh, 00h;
-    int 10h
-
-    ; fifth line
-
-    mov ch,13 ; r start
-    mov cl,30; col start
-    mov dh,13;   r end
-    mov dl,38;  col end
-    mov bh, 00h;
-    int 10h
-
-    mov ch,13 ; r start
-    mov cl,64; col start
-    mov dh,13;   r end
-    mov dl,74;  col end
-    mov bh, 00h;
-    int 10h
-    
-    ; ang v sa last line 
-
-    mov ch,13 ; r start
-    mov cl,39; col start
-    mov dh,13;   r end
-    mov dl,39;  col end
-    mov bh, 43h;
-    int 10h
-
-    mov ch,13 ; r start
-    mov cl,74; col start
-    mov dh,13;   r end
-    mov dl,74;  col end
-    mov bh, 43h;
-    int 10h
-    
-    mov ch, 22  ; Row start
-    mov cl, 2   ; Column start
-    mov dh, 22  ; Row end
-    mov dl, 77  ; Column end
-    mov bh, 08EH; Blinking red background yellow text
-    int 10h
- 
-    ; Yellow Blinking Text "Please Fill Up The Form"
-    mov ch, 3   ; Row start
-    mov cl, 25  ; Column start
-    mov dh, 3   ; Row end
-    mov dl, 66  ; Column end
-    mov bh, 0CEh; Blinking black background yellow text
-    int 10h
-
-    
-
-    ; Print the form template
-    mov ah, 09h
-    lea dx, menu
+    mov ah, 0ah
     int 21h
+    CALL NextL
 
-    ; Now print the user inputs in the correct positions
-    ; Personnel Type
-    mov ah, 02h
-    mov bh, 00h
-    mov dh, 05h
-    mov dl, 20
-    int 10h
-    lea dx, personnelType + 2
-    call printString
+    lea dx, row4
+    call PrintString
+    lea dx, applicantName
+    mov ah, 0ah
+    int 21h
+    CALL NextL
 
-    ; Applicant Name
-    mov ah, 02h
-    mov bh, 00h
-    mov dh, 06h
-    mov dl, 29
-    int 10h
-    lea dx, applicantName + 2
-    call printString
+    lea dx, row5
+    call PrintString
+    lea dx, mobileNumber
+    mov ah, 0ah
+    int 21h
+    CALL NextL
 
-    ; Mobile Number
-    mov ah, 02h
-    mov bh, 00h
-    mov dh, 07h
-    mov dl, 20
-    int 10h
-    lea dx, mobileNumber + 2
-    call printString
+    lea dx, row6
+    call PrintString
+    lea dx, carMake
+    mov ah, 0ah
+    int 21h
+    CALL NextL
 
-    ; Car Make
-    mov ah, 02h
-    mov bh, 00h
-    mov dh, 08h
-    mov dl, 29
-    int 10h
-    lea dx, carMake + 2
-    call printString
+    lea dx, row7
+    call PrintString
+    lea dx, carColor
+    mov ah, 0ah
+    int 21h
+    CALL NextL
 
-    ; Car Color
-    mov ah, 02h
-    mov bh, 00h
-    mov dh, 09h
-    mov dl, 20
-    int 10h
-    lea dx, carColor + 2
-    call printString
+    lea dx, row8
+    call PrintString
+    lea dx, stickerType
+    mov ah, 0ah
+    int 21h
+    CALL NextL
 
-    ; Sticker Type
-    mov ah, 02h
-    mov bh, 00h
-    mov dh, 10h
-    mov dl, 29
-    int 10h
-    lea dx, stickerType + 2
-    call printString
+    lea dx, row9
+    call PrintString
+    lea dx, idNum
+    mov ah, 0ah
+    int 21h
+    CALL NextL
 
-    ; ID Number
-    mov ah, 02h
-    mov bh, 00h
-    mov dh, 06h
-    mov dl, 66
-    int 10h
-    lea dx, idNum + 2
-    call printString
+    lea dx, rowA
+    call PrintString
+    lea dx, address
+    mov ah, 0ah
+    int 21h
+    CALL NextL
 
-    ; Address
-    mov ah, 02h
-    mov bh, 00h
-    mov dh, 07h
-    mov dl, 66
-    int 10h
-    lea dx, address + 2
-    call printString
+    lea dx, rowB
+    call PrintString
+    lea dx, plateNumber
+    mov ah, 0ah
+    int 21h
+    CALL NextL
 
-    ; Plate Number
-    mov ah, 02h
-    mov bh, 00h
-    mov dh, 08h
-    mov dl, 66
-    int 10h
-    lea dx, plateNumber + 2
-    call printString
+    lea dx, rowC
+    call PrintString
+    lea dx, carType
+    mov ah, 0ah
+    int 21h
+    CALL NextL
 
-    ; Car Type
-    mov ah, 02h
-    mov bh, 00h
-    mov dh, 09h
-    mov dl, 66
-    int 10h
-    lea dx, carType + 2
-    call printString
+    RET
 
-    ret
-printForm endp
+inputForm endp
+
 
 main proc
-    mov ax, @data
-    mov ds, ax
-   
-    ; Get user input first
-    call getUserInput
-
-    ; Clear the screen
-    mov ah, 00h
-    mov al, 03h
-    int 10h
     
-    ; Display the form with entered data
-    call printForm
+    mov ax, @data ; db setup
+    mov ds, ax
 
-    ; Move cursor to bottom of screen
-    mov ah, 02h
-    mov bh, 00h
-    mov dh, 24
-    mov dl, 0
+    call inputForm
+    
+    mov ah, 00h
+    mov al, 03h   ; display setup
     int 10h
+    call printForm
+ 
+    ; personnelType
+    mov ah, 02h          ; Function to set cursor position
+    mov bh, 00h          ; Page number (0 for standard screen)
+    mov dh, 5            ; Row (0-based)
+    mov dl, 029          ; Column (0-based)
+    int 10h              ; Call BIOS interrupt
 
+; Print Personnel
+    lea si, personnelType + 2  
+    mov cl, [personnelType+1]  
+PrintPersonnel:
+    mov dl, [si]
+    cmp dl, 0dh          
+    je DonePersonnel
+    mov ah, 02h          
+    int 21h
+    inc si
+    loop PrintPersonnel
+DonePersonnel:
+    CALL NextL
+
+
+    ; applicantName
+    mov ah, 02h          
+    mov bh, 00h          
+    mov dh, 7         
+    mov dl, 029         
+    int 10h             
+
+; Print Name
+    lea si, applicantName + 2  
+    mov cl, [applicantName+1]  
+PrintName:
+    mov dl, [si]
+    cmp dl, 0dh          
+    je DoneName
+    mov ah, 02h          
+    int 21h
+    inc si
+    loop PrintName
+DoneName:
+    CALL NextL
+
+
+    ; mobileNumber
+    mov ah, 02h          ; Function to set cursor position
+    mov bh, 00h          ; Page number (0 for standard screen)
+    mov dh, 9            ; Row (0-based)
+    mov dl, 029          ; Column (0-based)
+    int 10h              ; Call BIOS interrupt
+ 
+; Print Mobile Number
+    lea si, mobileNumber + 2  
+    mov cl, [mobileNumber+1]  
+PrintNumber:
+    mov dl, [si]
+    cmp dl, 0dh          
+    je DoneNumber
+    mov ah, 02h          
+    int 21h
+    inc si
+    loop PrintNumber
+DoneNumber:
+    CALL NextL
+ 
+    ; carMake
+    mov ah, 02h          ; Function to set cursor position
+    mov bh, 00h          ; Page number (0 for standard screen)
+    mov dh, 11           ; Row (0-based)
+    mov dl, 029          ; Column (0-based)
+    int 10h              ; Call BIOS interrupt
+ 
+    ; Print car make
+    lea si, carMake + 2  
+    mov cl, [carMake+1]  
+PrintMake:
+    mov dl, [si]
+    cmp dl, 0dh          
+    je DoneMake
+    mov ah, 02h          
+    int 21h
+    inc si
+    loop PrintMake
+DoneMake:
+    CALL NextL
+ 
+    ; carColor
+    mov ah, 02h          ; Function to set cursor position
+    mov bh, 00h          ; Page number (0 for standard screen)
+    mov dh, 13           ; Row (0-based)
+    mov dl, 029          ; Column (0-based)
+    int 10h              ; Call BIOS interrupt
+ 
+    ; Print car color
+    lea si, carColor + 2  
+    mov cl, [carColor+1]  
+PrintColor:
+    mov dl, [si]
+    cmp dl, 0dh          
+    je DoneColor
+    mov ah, 02h          
+    int 21h
+    inc si
+    loop PrintColor
+DoneColor:
+    CALL NextL
+ 
+    ; stickerType
+    mov ah, 02h          ; Function to set cursor position
+    mov bh, 00h          ; Page number (0 for standard screen)
+    mov dh, 5            ; Row (0-based)
+    mov dl, 066          ; Column (0-based)
+    int 10h              ; Call BIOS interrupt
+ 
+    ; Print sticker type
+    lea si, stickerType + 2  
+    mov cl, [stickerType+1]  
+PrintSticker:
+    mov dl, [si]
+    cmp dl, 0dh          
+    je DoneSticker
+    mov ah, 02h          
+    int 21h
+    inc si
+    loop PrintSticker
+DoneSticker:
+    CALL NextL
+ 
+    ; idNum
+    mov ah, 02h          ; Function to set cursor position
+    mov bh, 00h          ; Page number (0 for standard screen)
+    mov dh, 7            ; Row (0-based)
+    mov dl, 066          ; Column (0-based)
+    int 10h              ; Call BIOS interrupt
+ 
+    ; Print ID Number
+    lea si, idNum + 2  
+    mov cl, [idNum+1]  
+PrintID:
+    mov dl, [si]
+    cmp dl, 0dh          
+    je DoneID
+    mov ah, 02h          
+    int 21h
+    inc si
+    loop PrintID
+DoneID:
+    CALL NextL
+ 
+    ; address
+    mov ah, 02h          ; Function to set cursor position
+    mov bh, 00h          ; Page number (0 for standard screen)
+    mov dh, 9            ; Row (0-based)
+    mov dl, 066          ; Column (0-based)
+    int 10h              ; Call BIOS interrupt
+ 
+; Print Address
+    lea si, address + 2  
+    mov cl, [address+1]  
+PrintAddress:
+    mov dl, [si]
+    cmp dl, 0dh          
+    je DoneAddress
+    mov ah, 02h          
+    int 21h
+    inc si
+    loop PrintAddress
+DoneAddress:
+    CALL NextL
+ 
+    ; plateNumber
+    mov ah, 02h          ; Function to set cursor position
+    mov bh, 00h          ; Page number (0 for standard screen)
+    mov dh, 11           ; Row (0-based)
+    mov dl, 066          ; Column (0-based)
+    int 10h              ; Call BIOS interrupt
+ 
+    ; Print Plate Number
+    lea si, plateNumber + 2  
+    mov cl, [plateNumber+1]  
+PrintPlate:
+    mov dl, [si]
+    cmp dl, 0dh          
+    je DonePlate
+    mov ah, 02h          
+    int 21h
+    inc si
+    loop PrintPlate
+DonePlate:
+    CALL NextL
+ 
+    ; carType
+    mov ah, 02h          ; Function to set cursor position
+    mov bh, 00h          ; Page number (0 for standard screen)
+    mov dh, 13           ; Row (0-based)
+    mov dl, 066          ; Column (0-based)
+    int 10h              ; Call BIOS interrupt
+ 
+    ; Print Car type
+    lea si, carType + 2  
+    mov cl, [carType+1]  
+PrintType:
+    mov dl, [si]
+    cmp dl, 0dh          
+    je DoneType
+    mov ah, 02h          
+    int 21h
+    inc si
+    loop PrintType
+DoneType:
+ 
+    mov ah, 02h          ; Function to set cursor position
+    mov bh, 00h          ; Page number (0 for standard screen)
+    mov dh, 21           ; Row (0-based)
+    mov dl, 80           ; Column (0-based)
+    int 10h              ; Call BIOS interrupt
+    
     mov ax, 4C00h ; return 0
     int 21h  
+    
 main endp
+
+printForm proc
+ 
+    xor al, al
+    
+    ; Grey BG
+    mov ah, 06h
+    mov ch, 1 ; row start
+    mov cl, 2 ; col start
+    mov dh, 19  ; row end
+    mov dl, 78  ; col end
+    mov bh, 70h ; grey bg with black text
+    int 10h
+    
+    ; header red bg
+    mov ah, 06h
+    mov ch, 1
+    mov cl, 3
+    mov dh, 3   
+    mov dl, 77  
+    mov bh, 4fh ; red bg with white text
+    int 10h
+    ; header yellow blink line
+    mov ah, 06h
+    mov ch, 3
+    mov cl, 3
+    mov dh, 3   
+    mov dl, 77  
+    mov bh, 0ceh ; red bg with yellow blinking text
+    int 10h
+    
+ 
+    ; black bg left
+    mov ah, 06h
+    mov ch, 5
+    mov cl, 29
+    mov dh, 5
+    mov dl, 41
+    mov bh, 0fh ; black bg with white text
+    int 10h
+    ; black bg right
+    mov ah, 06h
+    mov ch, 5
+    mov cl, 66
+    mov dh, 5
+    mov dl, 77
+    mov bh, 0fh ; black bg with white text
+    int 10h
+
+    ; black bg left
+    mov ah, 06h
+    mov ch, 7
+    mov cl, 29
+    mov dh, 7
+    mov dl, 41
+    mov bh, 0fh ; black bg with white text
+    int 10h
+    ; black bg right
+    mov ah, 06h
+    mov ch, 7
+    mov cl, 66
+    mov dh, 7
+    mov dl, 77
+    mov bh, 0fh ; black bg with white text
+    int 10h
+   
+   ; black bg left
+    mov ah, 06h
+    mov ch, 9
+    mov cl, 29
+    mov dh, 9
+    mov dl, 41
+    mov bh, 0fh ; black bg with white text
+    int 10h
+    ; black bg right
+    mov ah, 06h
+    mov ch, 9
+    mov cl, 66
+    mov dh, 9
+    mov dl, 77
+    mov bh, 0fh ; black bg with white text
+    int 10h
+
+    ; black bg left
+    mov ah, 06h
+    mov ch, 9
+    mov cl, 29
+    mov dh, 9
+    mov dl, 41
+    mov bh, 0fh ; black bg with white text
+    int 10h
+    ; black bg right
+    mov ah, 06h
+    mov ch, 9
+    mov cl, 66
+    mov dh, 9
+    mov dl, 77
+    mov bh, 0fh ; black bg with white text
+    int 10h
+
+    ; black bg left
+    mov ah, 06h
+    mov ch, 11
+    mov cl, 29
+    mov dh, 11
+    mov dl, 41
+    mov bh, 0fh ; black bg with white text
+    int 10h
+    ; black bg right
+    mov ah, 06h
+    mov ch, 11
+    mov cl, 66
+    mov dh, 11
+    mov dl, 77
+    mov bh, 0fh ; black bg with white text
+    int 10h
+
+    ; black bg left
+    mov ah, 06h
+    mov ch, 13
+    mov cl, 29
+    mov dh, 13
+    mov dl, 41
+    mov bh, 0fh ; black bg with white text
+    int 10h
+    ; black bg right
+    mov ah, 06h
+    mov ch, 13
+    mov cl, 66
+    mov dh, 13
+    mov dl, 77
+    mov bh, 0fh ; black bg with white text
+    int 10h
+
+    ; Upper Left V
+    mov ah, 06h
+    mov ch, 5
+    mov cl, 39
+    mov dh, 5
+    mov dl, 41
+    mov bh, 4fh ; red bg with white text
+    int 10h
+    ; Upper Right V
+    mov ah, 06h
+    mov ch, 5
+    mov cl, 75
+    mov dh, 5
+    mov dl, 77
+    mov bh, 4fh ; red bg with white text
+    int 10h
+    ; Lower Right V
+    mov ah, 06h
+    mov ch, 13
+    mov cl, 39
+    mov dh, 13
+    mov dl, 41
+    mov bh, 4fh ; red bg with white text
+    int 10h
+    ; Lower Left V
+    mov ah, 06h
+    mov ch, 13
+    mov cl, 75
+    mov dh, 13
+    mov dl, 77
+    mov bh, 4fh ; red bg with white text
+    int 10h
+ 
+    
+    ; Red BG Submit Button
+    mov ah, 06h
+    mov ch, 16
+    mov cl, 35
+    mov dh, 16
+    mov dl, 42
+    mov bh, 4eh ; red bg with yellow text
+    int 10h
+    
+    ; Blinking Yellow thankyou
+    mov ah, 06h
+    mov ch, 21
+    mov cl, 0
+    mov dh, 21
+    mov dl, 78
+    mov bh, 8eh
+    int 10h
+    
+    ; print
+    mov ah, 09h
+    mov dx, offset menu
+    int 21h
+ 
+    ret
+ 
+printForm endp
+ 
+
 end main
+

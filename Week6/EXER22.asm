@@ -1,7 +1,7 @@
 ; College Enrollment Form
 ; Filename: EXER22.ASM
 ; NAME: CHRISTIAN A NEMENO
-; Date: September 21, 2024
+; Date: September 20, 2024
 ; Description: This program implements a college enrollment form for CIT-U.
 ;              It collects student information and displays a summary.
 

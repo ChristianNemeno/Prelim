@@ -1,7 +1,7 @@
 ; Automated Teller Machine (ATM) Main Menu
 ; Filename: EXER23.ASM
 ; Author: CHRISTIAN A NEMENO
-; Date: September 21, 2024
+; Date: September 20, 2024
 ; Description: This program displays an ATM main menu, gets user input,
 ;              and prints back the chosen option with its corresponding transaction.
 
