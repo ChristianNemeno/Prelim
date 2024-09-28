@@ -32,7 +32,7 @@
     ;end of addition
 
     ;sub stuff
-    ENTER_MIN DB 'Enter minued: $'
+    ENTER_MIN DB 'Enter minuend: $'
     ENTER_SUBTRAHEND DB 'Enter subtrahend: $'
     THE_MINUEND DB 'Minuend is: $'
     THE_SUBTRAHEND DB 'Subtrahend is: $'
