@@ -1,3 +1,12 @@
+; Filename: EXER27.ASM
+; Programmer Name: Christian A. Nemeno
+; Date: September 28, 2024
+; Description: Make a program to input two integers, subtract the second 
+;integer from the first integer, and display the difference
+;of the two integers.
+; display back the difference
+; note please hit enter upon entering the integer , it handles more than 1 digit
+
 .MODEL SMALL
 .STACK 100H
 .DATA
@@ -68,10 +77,10 @@ END_INPUT:
 INPUT_NUM ENDP
 
 DISPLAY_NUM PROC
-    ; Check if the number is negative
+    
     TEST AX, AX
     JNS POSITIVE
-    ; If negative, print minus sign and negate the number
+    
     PUSH AX
     MOV DL, '-'
     MOV AH, 02H

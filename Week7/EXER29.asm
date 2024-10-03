@@ -1,3 +1,10 @@
+; Filename: EXER29.ASM
+; Programmer Name: Christian A. Nemeno
+; Date: September 28, 2024
+; Description: This assembly language program will get 2 integers
+; display back the quotient
+; please hit enter after each input the code handles more than one digit 
+
 .MODEL SMALL
 .STACK 100H
 .DATA

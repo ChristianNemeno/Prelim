@@ -1,3 +1,12 @@
+; Filename: EXER26.ASM
+; Programmer Name: Christian A. Nemeno
+; Date: September 28, 2024
+; Description: Make a program to input two integers, add the two integers, 
+;and display the sum of the two integers.
+
+; note please hit enter upon entering the integer it reads more than one integer
+; does not handle negative cases
+
 .MODEL SMALL
 .STACK 100H
 

@@ -1,6 +1,6 @@
 ; Filename: EXER25.ASM
-; Programmer Name: YOUR FULLNAME HERE
-; Date: DATE TODAY
+; Programmer Name: Christian A. Nemeno
+; Date: September 29, 2024
 ; Description: This assembly language program will get 3 string inputs and
 ; display back the 3 strings on separate lines.
 .MODEL SMALL

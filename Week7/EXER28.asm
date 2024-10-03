@@ -1,3 +1,10 @@
+; Filename: EXER28.ASM
+; Programmer Name: Christian A. Nemeno
+; Date: September 28, 2024
+; Description: Make a program to input two integers, multiply the two 
+;integers, and display the product of the two integers.
+; please hit enter after each input the code handles more than one digit 
+
 .MODEL SMALL
 .STACK 100H
 .DATA

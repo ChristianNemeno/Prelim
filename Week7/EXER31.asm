@@ -1,3 +1,10 @@
+; Filename: EXER31.ASM
+; Programmer Name: Christian A. Nemeno
+; Date: September 28, 2024
+; Description: Create a program to input an integer. Using a loop, display 
+;from 1 to the integer value entered by the user.
+; display until nth number 
+ 
 .model small
 .stack 100h
 
